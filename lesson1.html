@@ -13,21 +13,25 @@
             --staff-color: #333;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding: 1.5rem 0.75rem;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .game-container {
             background: white;
-            padding: 2rem;
+            padding: 1.75rem;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
@@ -35,11 +39,11 @@
             width: 100%;
         }
 
-        h1 { margin-top: 0; color: var(--staff-color); }
+        h1 { margin-top: 0; color: var(--staff-color); font-size: 1.6rem; }
 
         .back-link {
             display: inline-block;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary-color);
             text-decoration: none;
             font-size: 0.9rem;
@@ -70,17 +74,20 @@
             margin-bottom: 20px;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border: none;
             border-radius: 5px;
             background-color: #ddd;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.9rem;
             transition: all 0.2s;
+            touch-action: manipulation;
         }
 
         button.active {
@@ -90,7 +97,7 @@
 
         .staff-container {
             position: relative;
-            height: 220px;
+            height: 200px;
             width: 100%;
             display: flex;
             justify-content: center;
@@ -143,20 +150,26 @@
         }
 
         .score-board {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Piano scroll wrapper */
+        .piano-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
         }
 
         .piano {
             display: none;
-            justify-content: center;
+            justify-content: flex-start;
             position: relative;
             height: 140px;
-            margin-top: 20px;
-            padding: 10px;
+            padding: 10px 10px 10px 10px;
             background: #333;
             border-radius: 5px;
-            user-select: none;
         }
 
         .piano.visible { display: flex; }
@@ -173,45 +186,67 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding-bottom: 10px;
+            padding-bottom: 6px;
             font-weight: bold;
+            font-size: 0.65rem;
             color: #aaa;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            touch-action: manipulation;
+            transition: background 0.1s;
         }
 
         .key.black {
-            width: 28px;
+            width: 26px;
             height: 80px;
-            background: #000;
-            color: white;
+            background: #222;
+            color: transparent;
             position: absolute;
             z-index: 2;
             border-radius: 0 0 3px 3px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
         }
 
         .key:active, .key.pressed {
-            background: #eee;
+            background: #ddd;
             transform: translateY(2px);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .key.black:active, .key.black.pressed { background: #333; }
+        .key.black:active, .key.black.pressed {
+            background: #444;
+            transform: translateY(2px);
+        }
+
+        /* Highlight correct key on wrong answer */
+        .key.highlight {
+            background: #fff3cd;
+            border: 2px solid var(--primary-color);
+        }
 
         .instructions {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
-            margin-top: 10px;
+            margin-top: 12px;
             min-height: 1.2em;
         }
 
         @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
+            0%   { transform: translateX(0); }
+            25%  { transform: translateX(-5px); }
+            50%  { transform: translateX(5px); }
+            75%  { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
         .shake { animation: shake 0.4s ease-in-out; }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem 0.5rem; }
+            .game-container { padding: 1.25rem 1rem; border-radius: 10px; }
+            h1 { font-size: 1.3rem; }
+            .feedback { font-size: 0.95rem; }
+            .staff-container { height: 170px; }
+        }
     </style>
 </head>
 <body>
@@ -233,25 +268,28 @@
     <div class="feedback" id="feedback">Listen to the note...</div>
 
     <div class="staff-container" id="staff-area">
-        <svg width="100%" height="200" viewBox="0 0 400 200">
-            <line x1="50" y1="160" x2="350" y2="160" class="staff-line" />
-            <line x1="50" y1="140" x2="350" y2="140" class="staff-line" />
-            <line x1="50" y1="120" x2="350" y2="120" class="staff-line" />
-            <line x1="50" y1="100" x2="350" y2="100" class="staff-line" />
-            <line x1="50" y1="80"  x2="350" y2="80"  class="staff-line" />
+        <svg width="100%" height="190" viewBox="0 0 400 190">
+            <line x1="50" y1="155" x2="350" y2="155" class="staff-line" />
+            <line x1="50" y1="135" x2="350" y2="135" class="staff-line" />
+            <line x1="50" y1="115" x2="350" y2="115" class="staff-line" />
+            <line x1="50" y1="95"  x2="350" y2="95"  class="staff-line" />
+            <line x1="50" y1="75"  x2="350" y2="75"  class="staff-line" />
             <g id="note-group">
-                <line id="ledger-line" x1="180" y1="0" x2="220" y2="0" class="ledger-line" style="display:none"/>
-                <ellipse id="note-head" cx="200" cy="0" rx="12" ry="10" class="note-head" />
+                <line id="ledger-line-low"  x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <line id="ledger-line-high" x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <ellipse id="note-head" cx="200" cy="0" rx="12" ry="9" class="note-head" />
                 <line id="note-stem" x1="0" y1="0" x2="0" y2="0" class="note-stem" style="display:none" />
             </g>
         </svg>
         <div class="clef">&#119070;</div>
     </div>
 
-    <div id="keyboard-area" class="piano"></div>
+    <div class="piano-scroll">
+        <div id="keyboard-area" class="piano"></div>
+    </div>
 
     <div class="instructions" id="instructions">
-        Press the correct letter key on your keyboard (A-G) or use a MIDI keyboard.
+        Press the correct letter key on your keyboard (A&ndash;G) or use a MIDI keyboard.
     </div>
 </div>
 
@@ -266,7 +304,7 @@
 
     function playTone(freq, duration = 0.5) {
         if (!audioCtx) initAudio();
-        const osc = audioCtx.createOscillator();
+        const osc      = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         osc.type = 'triangle';
         osc.frequency.value = freq;
@@ -279,39 +317,43 @@
     }
 
     let currentLevel = 1;
-    let score = 0;
-    let currentNote = null;
+    let score        = 0;
+    let currentNote  = null;
     let isProcessing = false;
 
+    // Y coordinates: staff lines at y=75,95,115,135,155
+    // Lines represent F5,D5,B4,G4,E4. Spaces between/around them are E5,C5,A4,F4,D4 etc.
+    // Step = 10px per note position. Middle C (C4) sits one ledger line below staff.
     const notesData = [
-        { name: 'C', octave: 4, freq: 261.63, y: 180, stemDown: false, ledger: true,  midi: 60 },
-        { name: 'D', octave: 4, freq: 293.66, y: 170, stemDown: false, ledger: false, midi: 62 },
-        { name: 'E', octave: 4, freq: 329.63, y: 160, stemDown: false, ledger: false, midi: 64 },
-        { name: 'F', octave: 4, freq: 349.23, y: 150, stemDown: false, ledger: false, midi: 65 },
-        { name: 'G', octave: 4, freq: 392.00, y: 140, stemDown: false, ledger: false, midi: 67 },
-        { name: 'A', octave: 4, freq: 440.00, y: 130, stemDown: false, ledger: false, midi: 69 },
-        { name: 'B', octave: 4, freq: 493.88, y: 120, stemDown: false, ledger: false, midi: 71 },
-        { name: 'C', octave: 5, freq: 523.25, y: 110, stemDown: false, ledger: false, midi: 72 },
-        { name: 'D', octave: 5, freq: 587.33, y: 100, stemDown: true,  ledger: false, midi: 74 },
-        { name: 'E', octave: 5, freq: 659.25, y: 90,  stemDown: true,  ledger: false, midi: 76 },
-        { name: 'F', octave: 5, freq: 698.46, y: 80,  stemDown: true,  ledger: false, midi: 77 },
-        { name: 'G', octave: 5, freq: 783.99, y: 70,  stemDown: true,  ledger: false, midi: 79 },
-        { name: 'A', octave: 5, freq: 880.00, y: 60,  stemDown: true,  ledger: false, midi: 81 },
-        { name: 'B', octave: 5, freq: 987.77, y: 50,  stemDown: true,  ledger: false, midi: 83 },
-        { name: 'C', octave: 6, freq: 1046.50,y: 40,  stemDown: true,  ledger: true,  midi: 84 }
+        { name: 'C', octave: 4, freq:  261.63, y: 175, stemDown: false, ledgerLow: true,  ledgerHigh: false, midi: 60 },
+        { name: 'D', octave: 4, freq:  293.66, y: 165, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 62 },
+        { name: 'E', octave: 4, freq:  329.63, y: 155, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 64 },
+        { name: 'F', octave: 4, freq:  349.23, y: 145, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 65 },
+        { name: 'G', octave: 4, freq:  392.00, y: 135, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 67 },
+        { name: 'A', octave: 4, freq:  440.00, y: 125, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 69 },
+        { name: 'B', octave: 4, freq:  493.88, y: 115, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 71 },
+        { name: 'C', octave: 5, freq:  523.25, y: 105, stemDown: false, ledgerLow: false, ledgerHigh: false, midi: 72 },
+        { name: 'D', octave: 5, freq:  587.33, y:  95, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 74 },
+        { name: 'E', octave: 5, freq:  659.25, y:  85, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 76 },
+        { name: 'F', octave: 5, freq:  698.46, y:  75, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 77 },
+        { name: 'G', octave: 5, freq:  783.99, y:  65, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 79 },
+        { name: 'A', octave: 5, freq:  880.00, y:  55, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 81 },
+        { name: 'B', octave: 5, freq:  987.77, y:  45, stemDown: true,  ledgerLow: false, ledgerHigh: false, midi: 83 },
+        { name: 'C', octave: 6, freq: 1046.50, y:  35, stemDown: true,  ledgerLow: false, ledgerHigh: true,  midi: 84 }
     ];
 
-    const noteGroup    = document.getElementById('note-group');
-    const noteHead     = document.getElementById('note-head');
-    const noteStem     = document.getElementById('note-stem');
-    const ledgerLine   = document.getElementById('ledger-line');
-    const feedbackEl   = document.getElementById('feedback');
-    const scoreEl      = document.getElementById('score');
-    const pianoArea    = document.getElementById('keyboard-area');
+    const noteGroup      = document.getElementById('note-group');
+    const noteHead       = document.getElementById('note-head');
+    const noteStem       = document.getElementById('note-stem');
+    const ledgerLow      = document.getElementById('ledger-line-low');
+    const ledgerHigh     = document.getElementById('ledger-line-high');
+    const feedbackEl     = document.getElementById('feedback');
+    const scoreEl        = document.getElementById('score');
+    const pianoArea      = document.getElementById('keyboard-area');
     const instructionsEl = document.getElementById('instructions');
-    const btnL1        = document.getElementById('btn-level-1');
-    const btnL2        = document.getElementById('btn-level-2');
-    const midiStatusEl = document.getElementById('midi-status');
+    const btnL1          = document.getElementById('btn-level-1');
+    const btnL2          = document.getElementById('btn-level-2');
+    const midiStatusEl   = document.getElementById('midi-status');
 
     function init() {
         initMIDI();
@@ -327,12 +369,12 @@
             btnL1.classList.add('active');
             btnL2.classList.remove('active');
             pianoArea.classList.remove('visible');
-            instructionsEl.textContent = "Press the correct letter key on your keyboard (A-G) or use MIDI.";
+            instructionsEl.textContent = "Press the correct letter key on your keyboard (A\u2013G) or use MIDI.";
         } else {
             btnL1.classList.remove('active');
             btnL2.classList.add('active');
             pianoArea.classList.add('visible');
-            instructionsEl.textContent = "Click the piano keys or use a MIDI keyboard.";
+            instructionsEl.textContent = "Tap the correct key \u2014 octave matters! Scroll to see the full keyboard.";
         }
         score = 0;
         scoreEl.textContent = score;
@@ -340,6 +382,7 @@
     }
 
     function generatePiano() {
+        // White and black keys from C4 (midi 60) to C6 (midi 84)
         const layout = [
             { note: 'C',  type: 'white', midi: 60 }, { note: 'C#', type: 'black', midi: 61 },
             { note: 'D',  type: 'white', midi: 62 }, { note: 'D#', type: 'black', midi: 63 },
@@ -364,22 +407,28 @@
         layout.forEach((keyData) => {
             const key = document.createElement('div');
             key.className = `key ${keyData.type}`;
-            key.dataset.note = keyData.note.replace('#', '');
             key.dataset.midi = keyData.midi;
 
             if (keyData.type === 'white') {
-                key.textContent = keyData.note;
+                // Label every white key with note name; add octave number to C keys
                 if (keyData.note === 'C') {
-                    const octave = keyData.midi === 60 ? '4' : (keyData.midi === 72 ? '5' : '6');
-                    key.textContent += octave;
+                    const oct = keyData.midi === 60 ? 4 : (keyData.midi === 72 ? 5 : 6);
+                    key.textContent = `C${oct}`;
+                } else {
+                    key.textContent = keyData.note;
                 }
                 whiteKeyIndex++;
             } else {
-                key.style.left = `${(whiteKeyIndex * 40) - 14}px`;
+                key.style.left = `${(whiteKeyIndex * 40) - 13}px`;
             }
 
             if (keyData.type === 'white') {
-                key.onclick = (e) => handlePianoClick(e, keyData.note);
+                const midi = keyData.midi;
+                key.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    handlePianoPress(key, midi);
+                }, { passive: false });
+                key.addEventListener('mousedown', () => handlePianoPress(key, midi));
             }
 
             pianoArea.appendChild(key);
@@ -388,15 +437,23 @@
         pianoArea.style.width = `${whiteKeyIndex * 40 + 20}px`;
     }
 
+    function handlePianoPress(keyEl, midi) {
+        if (currentLevel !== 2) return;
+        initAudio();
+        keyEl.classList.add('pressed');
+        setTimeout(() => keyEl.classList.remove('pressed'), 200);
+        checkAnswerByMidi(midi);
+    }
+
     function nextNote() {
         isProcessing = false;
         feedbackEl.textContent = "Listen...";
         feedbackEl.style.color = "#333";
         noteHead.style.fill = "#333";
         noteGroup.classList.remove('shake');
+        clearHighlights();
 
-        const randomIndex = Math.floor(Math.random() * notesData.length);
-        currentNote = notesData[randomIndex];
+        currentNote = notesData[Math.floor(Math.random() * notesData.length)];
         renderNoteVisuals(currentNote);
 
         setTimeout(() => {
@@ -407,6 +464,7 @@
 
     function renderNoteVisuals(note) {
         noteHead.setAttribute('cy', note.y);
+
         noteStem.style.display = 'block';
         if (note.stemDown) {
             noteStem.setAttribute('x1', 200 - 12);
@@ -419,56 +477,95 @@
             noteStem.setAttribute('x2', 200 + 12);
             noteStem.setAttribute('y2', note.y - 45);
         }
-        if (note.ledger) {
-            ledgerLine.style.display = 'block';
-            ledgerLine.setAttribute('y1', note.y);
-            ledgerLine.setAttribute('y2', note.y);
+
+        if (note.ledgerLow) {
+            ledgerLow.style.display = 'block';
+            ledgerLow.setAttribute('y1', note.y);
+            ledgerLow.setAttribute('y2', note.y);
         } else {
-            ledgerLine.style.display = 'none';
+            ledgerLow.style.display = 'none';
         }
+
+        if (note.ledgerHigh) {
+            ledgerHigh.style.display = 'block';
+            ledgerHigh.setAttribute('y1', note.y);
+            ledgerHigh.setAttribute('y2', note.y);
+        } else {
+            ledgerHigh.style.display = 'none';
+        }
+    }
+
+    // Level 1: keyboard typing — only the letter name matters, not octave
+    function checkAnswerByName(letter) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const sampleNote = notesData.find(n => n.name === letter);
+        if (sampleNote) playTone(sampleNote.freq, 0.4);
+
+        if (letter === currentNote.name) {
+            handleCorrect();
+        } else {
+            handleWrong(`You pressed ${letter}`);
+        }
+    }
+
+    // Level 2: piano / MIDI — exact note including octave must match
+    function checkAnswerByMidi(midi) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const played = notesData.find(n => n.midi === midi);
+        if (played) playTone(played.freq, 0.4);
+
+        if (midi === currentNote.midi) {
+            handleCorrect();
+        } else {
+            const label = played ? `${played.name}${played.octave}` : 'that note';
+            handleWrong(`You played ${label}`);
+            highlightCorrectKey();
+        }
+    }
+
+    function handleCorrect() {
+        score += 10;
+        scoreEl.textContent = score;
+        feedbackEl.textContent = "Correct!";
+        feedbackEl.style.color = "var(--success-color)";
+        noteHead.style.fill = "var(--success-color)";
+        setTimeout(nextNote, 1500);
+    }
+
+    function handleWrong(message) {
+        score = Math.max(0, score - 5);
+        scoreEl.textContent = score;
+        feedbackEl.textContent = `${message}. Listen again...`;
+        feedbackEl.style.color = "var(--error-color)";
+        noteGroup.classList.add('shake');
+        setTimeout(() => {
+            playTone(currentNote.freq, 0.8);
+            setTimeout(nextNote, 1500);
+        }, 1000);
+    }
+
+    function highlightCorrectKey() {
+        const key = document.querySelector(`.key[data-midi="${currentNote.midi}"]`);
+        if (key) key.classList.add('highlight');
+        // Scroll piano so the correct key is visible
+        key && key.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.key.highlight').forEach(k => k.classList.remove('highlight'));
     }
 
     function handleKeyInput(e) {
         if (currentLevel !== 1 || isProcessing) return;
         const key = e.key.toUpperCase();
-        if (['A','B','C','D','E','F','G'].includes(key)) checkAnswer(key);
+        if (['A','B','C','D','E','F','G'].includes(key)) checkAnswerByName(key);
     }
 
-    function handlePianoClick(e, noteName) {
-        if (currentLevel !== 2) return;
-        const keyEl = e.target;
-        keyEl.classList.add('pressed');
-        setTimeout(() => keyEl.classList.remove('pressed'), 200);
-        checkAnswer(noteName);
-    }
-
-    function checkAnswer(inputNote) {
-        if (isProcessing) return;
-        isProcessing = true;
-
-        const inputNoteData = notesData.find(n => n.name === inputNote);
-        if (inputNoteData) playTone(inputNoteData.freq, 0.4);
-
-        if (inputNote === currentNote.name) {
-            score += 10;
-            scoreEl.textContent = score;
-            feedbackEl.textContent = "Correct!";
-            feedbackEl.style.color = "var(--success-color)";
-            noteHead.style.fill = "var(--success-color)";
-            setTimeout(nextNote, 1500);
-        } else {
-            score = Math.max(0, score - 5);
-            scoreEl.textContent = score;
-            feedbackEl.textContent = `You played ${inputNote}. Listen to the correct one...`;
-            feedbackEl.style.color = "var(--error-color)";
-            noteGroup.classList.add('shake');
-            setTimeout(() => {
-                playTone(currentNote.freq, 0.8);
-                setTimeout(nextNote, 1500);
-            }, 1000);
-        }
-    }
-
+    // MIDI
     function initMIDI() {
         if (navigator.requestMIDIAccess) {
             navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
@@ -478,11 +575,12 @@
     function onMIDISuccess(midiAccess) {
         midiStatusEl.textContent = "MIDI: Ready";
         midiStatusEl.classList.add('connected');
-        for (let input of midiAccess.inputs.values()) {
-            input.onmidimessage = getMIDIMessage;
-        }
+        for (let input of midiAccess.inputs.values()) input.onmidimessage = getMIDIMessage;
         midiAccess.onstatechange = (e) => {
-            if (e.port.state === 'connected') midiStatusEl.textContent = "MIDI: Connected";
+            if (e.port.state === 'connected') {
+                for (let input of midiAccess.inputs.values()) input.onmidimessage = getMIDIMessage;
+                midiStatusEl.textContent = "MIDI: Connected";
+            }
         };
     }
 
@@ -491,21 +589,27 @@
     }
 
     function getMIDIMessage(message) {
-        const command  = message.data[0];
-        const note     = message.data[1];
-        const velocity = message.data.length > 2 ? message.data[2] : 0;
+        const [command, note, velocity] = message.data;
         if (command === 144 && velocity > 0) handleMIDINoteOn(note);
     }
 
-    function handleMIDINoteOn(midiNoteNumber) {
+    function handleMIDINoteOn(midiNum) {
         const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-        const noteName  = noteNames[midiNoteNumber % 12];
-        const pianoKey  = document.querySelector(`.key[data-midi="${midiNoteNumber}"]`);
+        const noteName  = noteNames[midiNum % 12];
+
+        const pianoKey = document.querySelector(`.key[data-midi="${midiNum}"]`);
         if (pianoKey) {
             pianoKey.classList.add('pressed');
             setTimeout(() => pianoKey.classList.remove('pressed'), 200);
         }
-        if (!noteName.includes('#')) checkAnswer(noteName);
+
+        if (currentLevel === 1) {
+            // Letter-only mode: ignore sharps/flats
+            if (!noteName.includes('#')) checkAnswerByName(noteName);
+        } else {
+            // Octave-aware mode for Level 2
+            checkAnswerByMidi(midiNum);
+        }
     }
 
     init();

@@ -1,0 +1,149 @@
+:root {
+    --bg-color: #f0f4f8;
+    --primary-color: #4a90e2;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --staff-color: #333;
+}
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    min-height: 100vh; margin: 0;
+    padding: 1.5rem 0.75rem;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+}
+
+.game-container {
+    background: white; padding: 1.75rem; border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center; max-width: 740px; width: 100%;
+}
+
+h1 { margin-top: 0; color: var(--staff-color); font-size: 1.6rem; }
+
+.back-link {
+    display: inline-block; margin-bottom: 0.75rem;
+    color: var(--primary-color); text-decoration: none; font-size: 0.9rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+.status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 0.9rem; color: #666;
+}
+
+.midi-status { padding: 4px 8px; border-radius: 4px; background: #eee; font-size: 0.8rem; }
+.midi-status.connected { background: #d4edda; color: #155724; }
+
+.key-sig-label {
+    display: none;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--primary-color);
+    padding: 3px 8px; border-radius: 4px;
+    background: #e8f0fc;
+}
+
+.controls {
+    margin-bottom: 20px;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
+}
+
+button {
+    padding: 10px 18px; border: none; border-radius: 5px;
+    background-color: #ddd; cursor: pointer;
+    font-weight: bold; font-size: 0.9rem;
+    transition: all 0.2s; touch-action: manipulation;
+}
+button.active { background-color: var(--primary-color); color: white; }
+
+/* Staff */
+.staff-container {
+    position: relative; height: 200px; width: 100%;
+    display: flex; justify-content: center; align-items: center;
+    margin-bottom: 20px;
+}
+.staff-container-grand {
+    height: 295px;
+}
+
+svg { overflow: visible; }
+.staff-line  { stroke: var(--staff-color); stroke-width: 2; }
+.ledger-line { stroke: var(--staff-color); stroke-width: 2; }
+.note-head   { fill: #333; stroke: none; transition: fill 0.3s; }
+.note-stem   { stroke: #333; stroke-width: 2; }
+
+/* Clefs — absolutely positioned over the SVG */
+.clef {
+    font-family: 'Times New Roman', serif;
+    color: var(--staff-color);
+    position: absolute; z-index: 1; line-height: 1;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+/* Single treble staff */
+.clef-treble { font-size: 150px; left: 10px; top: 50%; }
+/* Single bass staff */
+.clef-bass   { font-size: 68px;  left: 10px; top: 46%; }
+/* Grand staff treble clef */
+.clef-treble-grand { font-size: 130px; left: 8px; top: 28%; }
+/* Grand staff bass clef */
+.clef-bass-grand   { font-size: 60px;  left: 10px; top: 77%; }
+
+.feedback {
+    height: 40px; font-weight: bold; font-size: 1.1rem;
+    margin-bottom: 10px; color: #333;
+}
+.score-board { font-size: 1.1rem; }
+
+/* Piano */
+.piano-scroll {
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    max-width: 100%; margin-top: 20px; border-radius: 5px;
+}
+.piano {
+    display: none; justify-content: flex-start; position: relative;
+    height: 140px; padding: 10px;
+    background: #333; border-radius: 5px;
+}
+.piano.visible { display: flex; }
+
+.key {
+    width: 40px; height: 120px; background: white;
+    border: 1px solid #ccc; border-radius: 0 0 5px 5px;
+    cursor: pointer; position: relative; z-index: 1;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 6px; font-weight: bold; font-size: 0.62rem; color: #aaa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    flex-shrink: 0; touch-action: manipulation; transition: background 0.1s;
+}
+.key.black {
+    width: 26px; height: 80px; background: #222; color: transparent;
+    position: absolute; z-index: 2; border-radius: 0 0 3px 3px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+.key.black.clickable { cursor: pointer; }
+.key:active, .key.pressed { background: #ddd; transform: translateY(2px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+.key.black:active, .key.black.pressed { background: #444; transform: translateY(2px); }
+.key.highlight { background: #fff3cd !important; border: 2px solid var(--primary-color) !important; }
+.key.black.highlight { background: #2c5f2e !important; }
+
+.instructions { font-size: 0.85rem; color: #666; margin-top: 12px; min-height: 1.2em; }
+
+@keyframes shake {
+    0%{transform:translateX(0)} 25%{transform:translateX(-5px)}
+    50%{transform:translateX(5px)} 75%{transform:translateX(-5px)} 100%{transform:translateX(0)}
+}
+.shake { animation: shake 0.4s ease-in-out; }
+
+@media (max-width: 480px) {
+    body { padding: 0.75rem 0.5rem; }
+    .game-container { padding: 1.25rem 1rem; border-radius: 10px; }
+    h1 { font-size: 1.3rem; }
+    .feedback { font-size: 0.95rem; }
+    .staff-container { height: 175px; }
+    .staff-container-grand { height: 260px; }
+}

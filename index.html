@@ -5,113 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piano Lessons</title>
     <style>
-        :root {
-            --bg: #f0f4f8;
-            --primary: #4a90e2;
-            --card-shadow: 0 4px 16px rgba(0,0,0,0.10);
-        }
-
+        :root { --primary: #4a90e2; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-            padding: 3rem 1rem;
-            color: #333;
+            background: #f0f4f8; min-height: 100vh;
+            padding: 3rem 1rem; color: #333;
         }
+        header { text-align: center; margin-bottom: 2.5rem; }
+        header h1 { font-size: 2.2rem; letter-spacing: -0.5px; }
+        header p { margin-top: 0.5rem; color: #666; font-size: 1rem; }
 
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
+        .section-label {
+            max-width: 900px; margin: 2rem auto 0.75rem;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #999; padding: 0 0.25rem;
         }
-
-        header h1 {
-            font-size: 2.4rem;
-            letter-spacing: -0.5px;
-        }
-
-        header p {
-            margin-top: 0.5rem;
-            color: #666;
-            font-size: 1.05rem;
-        }
-
         .lessons {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            max-width: 900px;
-            margin: 0 auto;
+            gap: 1.25rem; max-width: 900px; margin: 0 auto;
         }
-
         .lesson-card {
-            background: white;
-            border-radius: 14px;
-            box-shadow: var(--card-shadow);
-            padding: 1.8rem;
-            text-decoration: none;
-            color: inherit;
+            background: white; border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 1.6rem; text-decoration: none; color: inherit;
             transition: transform 0.15s, box-shadow 0.15s;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
+            display: flex; flex-direction: column; gap: 0.5rem;
         }
-
-        .lesson-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.14);
-        }
-
-        .lesson-number {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--primary);
-        }
-
-        .lesson-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .lesson-desc {
-            font-size: 0.9rem;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .lesson-badge {
-            margin-top: auto;
-            padding-top: 1rem;
-            font-size: 0.8rem;
-            color: #aaa;
-        }
+        .lesson-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
+        .lesson-number { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); }
+        .lesson-title  { font-size: 1.15rem; font-weight: 700; }
+        .lesson-desc   { font-size: 0.875rem; color: #666; line-height: 1.5; }
+        .lesson-badge  { margin-top: auto; padding-top: 0.75rem; font-size: 0.78rem; color: #bbb; }
     </style>
 </head>
 <body>
-
 <header>
     <h1>Piano Lessons</h1>
     <p>Pick a lesson to get started</p>
 </header>
 
-<main class="lessons">
-
+<div class="section-label">Note Reading</div>
+<div class="lessons">
     <a href="lesson1.html" class="lesson-card">
         <div class="lesson-number">Lesson 1</div>
-        <div class="lesson-title">Treble Clef Master</div>
-        <div class="lesson-desc">
-            Identify notes on the treble clef staff. Type the letter name or click piano keys.
-            MIDI keyboard supported.
-        </div>
-        <div class="lesson-badge">Note reading &middot; C4&ndash;C6</div>
+        <div class="lesson-title">Treble Clef</div>
+        <div class="lesson-desc">Identify notes on the treble clef staff. Type the letter or click the correct piano key.</div>
+        <div class="lesson-badge">C4 &ndash; C6 &middot; Type or Piano</div>
     </a>
+    <a href="lesson2.html" class="lesson-card">
+        <div class="lesson-number">Lesson 2</div>
+        <div class="lesson-title">Bass Clef</div>
+        <div class="lesson-desc">Identify notes on the bass clef staff. Type the letter or click the correct piano key.</div>
+        <div class="lesson-badge">E2 &ndash; C4 &middot; Type or Piano</div>
+    </a>
+    <a href="lesson3.html" class="lesson-card">
+        <div class="lesson-number">Lesson 3</div>
+        <div class="lesson-title">Grand Staff</div>
+        <div class="lesson-desc">Notes appear on either the treble or bass clef. Identify each one across the full range.</div>
+        <div class="lesson-badge">G2 &ndash; F5 &middot; Type or Piano</div>
+    </a>
+</div>
 
-    <!-- Add future lessons here following the same card pattern -->
-
-</main>
-
+<div class="section-label">Key Signatures</div>
+<div class="lessons">
+    <a href="lesson4.html" class="lesson-card">
+        <div class="lesson-number">Lesson 4</div>
+        <div class="lesson-title">Treble + Key Signatures</div>
+        <div class="lesson-desc">Read notes on the treble clef with a random key signature. Click the correct piano key including accidentals.</div>
+        <div class="lesson-badge">C4 &ndash; C6 &middot; Piano only</div>
+    </a>
+    <a href="lesson5.html" class="lesson-card">
+        <div class="lesson-number">Lesson 5</div>
+        <div class="lesson-title">Bass + Key Signatures</div>
+        <div class="lesson-desc">Read notes on the bass clef with a random key signature. Click the correct piano key including accidentals.</div>
+        <div class="lesson-badge">E2 &ndash; C4 &middot; Piano only</div>
+    </a>
+    <a href="lesson6.html" class="lesson-card">
+        <div class="lesson-number">Lesson 6</div>
+        <div class="lesson-title">Grand Staff + Key Signatures</div>
+        <div class="lesson-desc">Both staves, random key signatures. The full challenge &mdash; treble, bass, and accidentals all at once.</div>
+        <div class="lesson-badge">G2 &ndash; F5 &middot; Piano only</div>
+    </a>
+</div>
 </body>
 </html>

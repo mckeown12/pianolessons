@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 6: Grand Staff + Key Signatures</title>
+    <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="game-container">
+    <a href="index.html" class="back-link">&larr; All Lessons</a>
+    <h1>Grand Staff + Key Signatures</h1>
+    <div class="status-bar">
+        <div class="score-board">Score: <span id="score">0</span></div>
+        <span id="key-sig-label" class="key-sig-label"></span>
+        <div id="midi-status" class="midi-status">MIDI: Not Connected</div>
+    </div>
+    <div id="controls" class="controls"></div>
+    <div class="feedback" id="feedback">Listen to the note...</div>
+
+    <div class="staff-container staff-container-grand">
+        <svg width="100%" height="285" viewBox="0 0 400 285">
+            <!-- Bracket -->
+            <line x1="38" y1="40"  x2="38" y2="260" stroke="#333" stroke-width="3"/>
+            <line x1="38" y1="40"  x2="52" y2="40"  stroke="#333" stroke-width="3"/>
+            <line x1="38" y1="260" x2="52" y2="260" stroke="#333" stroke-width="3"/>
+            <!-- Treble staff -->
+            <line x1="50" y1="40"  x2="350" y2="40"  class="staff-line"/>
+            <line x1="50" y1="60"  x2="350" y2="60"  class="staff-line"/>
+            <line x1="50" y1="80"  x2="350" y2="80"  class="staff-line"/>
+            <line x1="50" y1="100" x2="350" y2="100" class="staff-line"/>
+            <line x1="50" y1="120" x2="350" y2="120" class="staff-line"/>
+            <!-- Bass staff -->
+            <line x1="50" y1="180" x2="350" y2="180" class="staff-line"/>
+            <line x1="50" y1="200" x2="350" y2="200" class="staff-line"/>
+            <line x1="50" y1="220" x2="350" y2="220" class="staff-line"/>
+            <line x1="50" y1="240" x2="350" y2="240" class="staff-line"/>
+            <line x1="50" y1="260" x2="350" y2="260" class="staff-line"/>
+            <!-- Key signature groups -->
+            <g id="treble-keysig-group"></g>
+            <g id="bass-keysig-group"></g>
+            <!-- Treble note group -->
+            <g id="treble-note-group">
+                <line id="treble-ledger-low"  x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <line id="treble-ledger-high" x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <ellipse id="treble-note-head" cx="200" cy="0" rx="12" ry="9" class="note-head"/>
+                <line id="treble-note-stem" x1="0" y1="0" x2="0" y2="0" class="note-stem" style="display:none"/>
+            </g>
+            <!-- Bass note group -->
+            <g id="bass-note-group">
+                <line id="bass-ledger-low"  x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <line id="bass-ledger-high" x1="178" y1="0" x2="222" y2="0" class="ledger-line" style="display:none"/>
+                <ellipse id="bass-note-head" cx="200" cy="0" rx="12" ry="9" class="note-head"/>
+                <line id="bass-note-stem" x1="0" y1="0" x2="0" y2="0" class="note-stem" style="display:none"/>
+            </g>
+        </svg>
+        <div class="clef clef-treble-grand">&#119070;</div>
+        <div class="clef clef-bass-grand">&#119074;</div>
+    </div>
+
+    <div class="piano-scroll"><div id="keyboard-area" class="piano"></div></div>
+    <div class="instructions" id="instructions">Tap the correct piano key &mdash; check the key signature on both staves!</div>
+</div>
+<script>
+window.LESSON_CONFIG = {
+    clefType: 'grand',
+    pianoOnly: true,
+    useKeySignatures: true,
+    pianoMin: 40,  // E2
+    pianoMax: 84,  // C6
+    notesData: [
+        // ── Treble (C4–F5) ──
+        { name:'C', octave:4, freq: 261.63, y:140, stemDown:false, ledgerLow:true,  ledgerHigh:false, midi:60, clef:'treble' },
+        { name:'D', octave:4, freq: 293.66, y:130, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:62, clef:'treble' },
+        { name:'E', octave:4, freq: 329.63, y:120, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:64, clef:'treble' },
+        { name:'F', octave:4, freq: 349.23, y:110, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:65, clef:'treble' },
+        { name:'G', octave:4, freq: 392.00, y:100, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:67, clef:'treble' },
+        { name:'A', octave:4, freq: 440.00, y: 90, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:69, clef:'treble' },
+        { name:'B', octave:4, freq: 493.88, y: 80, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:71, clef:'treble' },
+        { name:'C', octave:5, freq: 523.25, y: 70, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:72, clef:'treble' },
+        { name:'D', octave:5, freq: 587.33, y: 60, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:74, clef:'treble' },
+        { name:'E', octave:5, freq: 659.25, y: 50, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:76, clef:'treble' },
+        { name:'F', octave:5, freq: 698.46, y: 40, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:77, clef:'treble' },
+        // ── Bass (G2–B3) ──
+        { name:'G', octave:2, freq:  98.00, y:260, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:43, clef:'bass' },
+        { name:'A', octave:2, freq: 110.00, y:250, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:45, clef:'bass' },
+        { name:'B', octave:2, freq: 123.47, y:240, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:47, clef:'bass' },
+        { name:'C', octave:3, freq: 130.81, y:230, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:48, clef:'bass' },
+        { name:'D', octave:3, freq: 146.83, y:220, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:50, clef:'bass' },
+        { name:'E', octave:3, freq: 164.81, y:210, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:52, clef:'bass' },
+        { name:'F', octave:3, freq: 174.61, y:200, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:53, clef:'bass' },
+        { name:'G', octave:3, freq: 196.00, y:190, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:55, clef:'bass' },
+        { name:'A', octave:3, freq: 220.00, y:180, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:57, clef:'bass' },
+        { name:'B', octave:3, freq: 246.94, y:170, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:59, clef:'bass' },
+    ],
+};
+</script>
+<script src="game.js"></script>
+</body>
+</html>

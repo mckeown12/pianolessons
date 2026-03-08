@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Lessons</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --primary: #4a90e2;
+            --card-shadow: 0 4px 16px rgba(0,0,0,0.10);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 3rem 1rem;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.4rem;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            margin-top: 0.5rem;
+            color: #666;
+            font-size: 1.05rem;
+        }
+
+        .lessons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            padding: 1.8rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.15s, box-shadow 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+        }
+
+        .lesson-number {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+        }
+
+        .lesson-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .lesson-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .lesson-badge {
+            margin-top: auto;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Piano Lessons</h1>
+    <p>Pick a lesson to get started</p>
+</header>
+
+<main class="lessons">
+
+    <a href="lesson1.html" class="lesson-card">
+        <div class="lesson-number">Lesson 1</div>
+        <div class="lesson-title">Treble Clef Master</div>
+        <div class="lesson-desc">
+            Identify notes on the treble clef staff. Type the letter name or click piano keys.
+            MIDI keyboard supported.
+        </div>
+        <div class="lesson-badge">Note reading &middot; C4&ndash;C6</div>
+    </a>
+
+    <!-- Add future lessons here following the same card pattern -->
+
+</main>
+
+</body>
+</html>

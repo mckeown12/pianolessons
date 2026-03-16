@@ -20,7 +20,8 @@
     </div>
     <div class="feedback" id="feedback">Listen to the note...</div>
     <div class="staff-container">
-        <svg width="100%" height="190" viewBox="0 0 400 190">
+        <svg width="400" height="190" viewBox="0 0 400 190">
+            <text x="10" y="108" font-size="55" class="clef-symbol">&#119074;</text>
             <line x1="50" y1="75"  x2="350" y2="75"  class="staff-line"/>
             <line x1="50" y1="95"  x2="350" y2="95"  class="staff-line"/>
             <line x1="50" y1="115" x2="350" y2="115" class="staff-line"/>
@@ -33,7 +34,6 @@
                 <line id="note-stem" x1="0" y1="0" x2="0" y2="0" class="note-stem" style="display:none"/>
             </g>
         </svg>
-        <div class="clef clef-bass">&#119074;</div>
     </div>
     <div class="piano-scroll"><div id="keyboard-area" class="piano"></div></div>
     <div class="instructions" id="instructions">Press the correct letter key (A&ndash;G) or use a MIDI keyboard.</div>
@@ -47,19 +47,19 @@ window.LESSON_CONFIG = {
     pianoMin: 36,  // C2
     pianoMax: 60,  // C4
     notesData: [
-        { name:'E', octave:2, freq:  82.41, y:175, stemDown:false, ledgerLow:true,  ledgerHigh:false, midi:40 },
-        { name:'F', octave:2, freq:  87.31, y:165, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:41 },
-        { name:'G', octave:2, freq:  98.00, y:155, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:43 },
-        { name:'A', octave:2, freq: 110.00, y:145, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:45 },
-        { name:'B', octave:2, freq: 123.47, y:135, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:47 },
-        { name:'C', octave:3, freq: 130.81, y:125, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:48 },
-        { name:'D', octave:3, freq: 146.83, y:115, stemDown:false, ledgerLow:false, ledgerHigh:false, midi:50 },
-        { name:'E', octave:3, freq: 164.81, y:105, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:52 },
-        { name:'F', octave:3, freq: 174.61, y: 95, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:53 },
-        { name:'G', octave:3, freq: 196.00, y: 85, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:55 },
-        { name:'A', octave:3, freq: 220.00, y: 75, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:57 },
-        { name:'B', octave:3, freq: 246.94, y: 65, stemDown:true,  ledgerLow:false, ledgerHigh:false, midi:59 },
-        { name:'C', octave:4, freq: 261.63, y: 55, stemDown:true,  ledgerLow:false, ledgerHigh:true,  midi:60 },
+        { name:'E', octave:2, freq:  82.41, y:175, stemDown:false, ledgerLow:1, ledgerHigh:0, midi:40 },
+        { name:'F', octave:2, freq:  87.31, y:165, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:41 },
+        { name:'G', octave:2, freq:  98.00, y:155, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:43 },
+        { name:'A', octave:2, freq: 110.00, y:145, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:45 },
+        { name:'B', octave:2, freq: 123.47, y:135, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:47 },
+        { name:'C', octave:3, freq: 130.81, y:125, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:48 },
+        { name:'D', octave:3, freq: 146.83, y:115, stemDown:false, ledgerLow:0, ledgerHigh:0, midi:50 },
+        { name:'E', octave:3, freq: 164.81, y:105, stemDown:true,  ledgerLow:0, ledgerHigh:0, midi:52 },
+        { name:'F', octave:3, freq: 174.61, y: 95, stemDown:true,  ledgerLow:0, ledgerHigh:0, midi:53 },
+        { name:'G', octave:3, freq: 196.00, y: 85, stemDown:true,  ledgerLow:0, ledgerHigh:0, midi:55 },
+        { name:'A', octave:3, freq: 220.00, y: 75, stemDown:true,  ledgerLow:0, ledgerHigh:0, midi:57 },
+        { name:'B', octave:3, freq: 246.94, y: 65, stemDown:true,  ledgerLow:0, ledgerHigh:0, midi:59 },
+        { name:'C', octave:4, freq: 261.63, y: 55, stemDown:true,  ledgerLow:0, ledgerHigh:1, midi:60 },
     ],
 };
 </script>

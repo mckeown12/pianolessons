@@ -62,36 +62,16 @@ button.active { background-color: var(--primary-color); color: white; }
 
 /* Staff */
 .staff-container {
-    position: relative; height: 200px; width: 100%;
-    display: flex; justify-content: center; align-items: center;
+    position: relative; width: 100%;
     margin-bottom: 20px;
 }
-.staff-container-grand {
-    height: 295px;
-}
 
-svg { overflow: visible; }
+svg { overflow: visible; display: block; width: 100%; height: auto; }
 .staff-line  { stroke: var(--staff-color); stroke-width: 2; }
 .ledger-line { stroke: var(--staff-color); stroke-width: 2; }
 .note-head   { fill: #333; stroke: none; transition: fill 0.3s; }
 .note-stem   { stroke: #333; stroke-width: 2; }
-
-/* Clefs — absolutely positioned over the SVG */
-.clef {
-    font-family: 'Times New Roman', serif;
-    color: var(--staff-color);
-    position: absolute; z-index: 1; line-height: 1;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-/* Single treble staff */
-.clef-treble { font-size: 150px; left: 10px; top: 50%; }
-/* Single bass staff */
-.clef-bass   { font-size: 68px;  left: 10px; top: 46%; }
-/* Grand staff treble clef */
-.clef-treble-grand { font-size: 130px; left: 8px; top: 28%; }
-/* Grand staff bass clef */
-.clef-bass-grand   { font-size: 60px;  left: 10px; top: 77%; }
+.clef-symbol { font-family: 'Times New Roman', serif; fill: var(--staff-color); }
 
 .feedback {
     height: 40px; font-weight: bold; font-size: 1.1rem;
@@ -144,6 +124,4 @@ svg { overflow: visible; }
     .game-container { padding: 1.25rem 1rem; border-radius: 10px; }
     h1 { font-size: 1.3rem; }
     .feedback { font-size: 0.95rem; }
-    .staff-container { height: 175px; }
-    .staff-container-grand { height: 260px; }
 }

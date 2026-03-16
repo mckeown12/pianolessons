@@ -55,12 +55,12 @@ function playTone(freq, dur = 0.5) {
 let cfg, isGrand, level = 1, score = 0, currentNote = null, currentKey = null, processing = false;
 
 // DOM refs
-let noteGroupEl, noteHeadEl, noteStemEl, ledgerLowEl, ledgerHighEl;
-let trebleGroupEl, trebleHeadEl, trebleStemEl, trebleLedgerLow, trebleLedgerHigh;
-let bassGroupEl,   bassHeadEl,   bassStemEl,   bassLedgerLow,   bassLedgerHigh;
+let noteGroupEl, noteHeadEl, noteStemEl;
+let trebleGroupEl, trebleHeadEl, trebleStemEl;
+let bassGroupEl,   bassHeadEl,   bassStemEl;
 let feedbackEl, scoreEl, pianoEl, instructionsEl, btnL1, btnL2, midiStatusEl, keySigLabelEl;
 // active note-group refs (swapped between treble/bass in grand mode)
-let activeGroup, activeHead, activeStem, activeLedgerLow, activeLedgerHigh;
+let activeGroup, activeHead, activeStem;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -80,24 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
         trebleGroupEl   = document.getElementById('treble-note-group');
         trebleHeadEl    = document.getElementById('treble-note-head');
         trebleStemEl    = document.getElementById('treble-note-stem');
-        trebleLedgerLow = document.getElementById('treble-ledger-low');
-        trebleLedgerHigh= document.getElementById('treble-ledger-high');
         bassGroupEl     = document.getElementById('bass-note-group');
         bassHeadEl      = document.getElementById('bass-note-head');
         bassStemEl      = document.getElementById('bass-note-stem');
-        bassLedgerLow   = document.getElementById('bass-ledger-low');
-        bassLedgerHigh  = document.getElementById('bass-ledger-high');
     } else {
         noteGroupEl  = document.getElementById('note-group');
         noteHeadEl   = document.getElementById('note-head');
         noteStemEl   = document.getElementById('note-stem');
-        ledgerLowEl  = document.getElementById('ledger-line-low');
-        ledgerHighEl = document.getElementById('ledger-line-high');
         activeGroup  = noteGroupEl;
         activeHead   = noteHeadEl;
         activeStem   = noteStemEl;
-        activeLedgerLow  = ledgerLowEl;
-        activeLedgerHigh = ledgerHighEl;
     }
 
     if (cfg.pianoOnly) {
@@ -114,6 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
     nextNote();
     if (!cfg.pianoOnly) document.addEventListener('keydown', handleKeyInput);
     initMIDI();
+
+    // Rescale piano after layout is calculated (needed for pianoOnly mode)
+    requestAnimationFrame(() => {
+        const totalWidth = parseInt(pianoEl.style.width, 10);
+        if (totalWidth) scalePiano(totalWidth);
+    });
+
+    // Rescale on orientation/resize
+    window.addEventListener('resize', () => {
+        const totalWidth = parseInt(pianoEl.style.width, 10);
+        if (totalWidth) scalePiano(totalWidth);
+    });
 });
 
 // ─── Level ────────────────────────────────────────────────────────────────────
@@ -122,11 +126,16 @@ function setLevel(l) {
     if (l === 1) {
         btnL1.classList.add('active'); btnL2.classList.remove('active');
         pianoEl.classList.remove('visible');
+        pianoEl.parentElement.style.height = '';
+        pianoEl.parentElement.style.overflow = '';
         instructionsEl.textContent = "Press the correct letter key (A\u2013G) or use MIDI.";
     } else {
         btnL1.classList.remove('active'); btnL2.classList.add('active');
         pianoEl.classList.add('visible');
-        instructionsEl.textContent = "Tap the correct key \u2014 octave matters! Scroll if needed.";
+        // Rescale after the piano becomes visible so clientWidth is accurate
+        const totalWidth = parseInt(pianoEl.style.width, 10);
+        if (totalWidth) scalePiano(totalWidth);
+        instructionsEl.textContent = "Tap the correct key \u2014 octave matters!";
     }
     score = 0; scoreEl.textContent = 0; nextNote();
 }
@@ -181,6 +190,35 @@ function renderKeySignature(key) {
 }
 
 // ─── Note rendering ────────────────────────────────────────────────────────────
+
+// Draw ledger lines for a note group. staffBottomY / staffTopY are the y-coords
+// of the outermost staff lines; spacing is the distance between staff lines (20px).
+// ledgerLow / ledgerHigh are counts (0, 1, 2, …).
+function renderLedgerLines(group, noteY, staffBottomY, staffTopY, spacing, ledgerLow, ledgerHigh) {
+    // Remove any previously drawn ledger lines
+    group.querySelectorAll('.ledger-line').forEach(el => el.remove());
+
+    const ns = 'http://www.w3.org/2000/svg';
+    // Lines below staff
+    for (let i = 1; i <= ledgerLow; i++) {
+        const y = staffBottomY + i * spacing;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', '178'); line.setAttribute('x2', '222');
+        line.setAttribute('y1', y);     line.setAttribute('y2', y);
+        line.setAttribute('class', 'ledger-line');
+        group.insertBefore(line, group.firstChild);
+    }
+    // Lines above staff
+    for (let i = 1; i <= ledgerHigh; i++) {
+        const y = staffTopY - i * spacing;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', '178'); line.setAttribute('x2', '222');
+        line.setAttribute('y1', y);     line.setAttribute('y2', y);
+        line.setAttribute('class', 'ledger-line');
+        group.insertBefore(line, group.firstChild);
+    }
+}
+
 function renderNoteVisuals(note) {
     if (isGrand) {
         // Hide both groups, then show the correct one
@@ -189,13 +227,11 @@ function renderNoteVisuals(note) {
         if (note.clef === 'treble') {
             trebleGroupEl.style.display = '';
             activeGroup  = trebleGroupEl; activeHead   = trebleHeadEl;
-            activeStem   = trebleStemEl;  activeLedgerLow  = trebleLedgerLow;
-            activeLedgerHigh = trebleLedgerHigh;
+            activeStem   = trebleStemEl;
         } else {
             bassGroupEl.style.display = '';
             activeGroup  = bassGroupEl; activeHead   = bassHeadEl;
-            activeStem   = bassStemEl; activeLedgerLow  = bassLedgerLow;
-            activeLedgerHigh = bassLedgerHigh;
+            activeStem   = bassStemEl;
         }
     }
 
@@ -208,10 +244,20 @@ function renderNoteVisuals(note) {
         activeStem.setAttribute('x1', 200+12); activeStem.setAttribute('y1', note.y);
         activeStem.setAttribute('x2', 200+12); activeStem.setAttribute('y2', note.y-45);
     }
-    activeLedgerLow.style.display  = note.ledgerLow  ? 'block' : 'none';
-    activeLedgerHigh.style.display = note.ledgerHigh ? 'block' : 'none';
-    if (note.ledgerLow)  { activeLedgerLow.setAttribute('y1', note.y);  activeLedgerLow.setAttribute('y2', note.y); }
-    if (note.ledgerHigh) { activeLedgerHigh.setAttribute('y1', note.y); activeLedgerHigh.setAttribute('y2', note.y); }
+
+    // Determine staff bounds for ledger line drawing
+    let staffBottom, staffTop, spacing;
+    if (isGrand) {
+        if (note.clef === 'treble') {
+            staffBottom = 120; staffTop = 40; spacing = 20; // grand treble lines y=40,60,80,100,120
+        } else {
+            staffBottom = 260; staffTop = 180; spacing = 20; // grand bass lines y=180,200,220,240,260
+        }
+    } else {
+        staffBottom = 155; staffTop = 75; spacing = 20; // single staff lines y=75,95,115,135,155
+    }
+    renderLedgerLines(activeGroup, note.y, staffBottom, staffTop, spacing,
+                      note.ledgerLow || 0, note.ledgerHigh || 0);
 }
 
 // ─── Game loop ────────────────────────────────────────────────────────────────
@@ -340,7 +386,27 @@ function generatePiano() {
         }
         pianoEl.appendChild(el);
     }
-    pianoEl.style.width = `${whiteCount * 40 + 20}px`;
+    const totalWidth = whiteCount * 40 + 20;
+    pianoEl.style.width = `${totalWidth}px`;
+    scalePiano(totalWidth);
+}
+
+function scalePiano(totalWidth) {
+    const scrollEl = pianoEl.parentElement; // .piano-scroll
+    const available = scrollEl.clientWidth || scrollEl.offsetWidth;
+    if (available > 0 && totalWidth > available) {
+        const scale = available / totalWidth;
+        pianoEl.style.transformOrigin = 'top left';
+        pianoEl.style.transform = `scale(${scale})`;
+        // Adjust the scroll container height to match scaled piano
+        const scaledHeight = Math.round(140 * scale);
+        scrollEl.style.height = `${scaledHeight}px`;
+        scrollEl.style.overflow = 'hidden';
+    } else {
+        pianoEl.style.transform = '';
+        pianoEl.parentElement.style.height = '';
+        pianoEl.parentElement.style.overflow = '';
+    }
 }
 
 function handlePianoPress(keyEl, midi) {

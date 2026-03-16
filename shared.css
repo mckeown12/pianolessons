@@ -81,27 +81,27 @@ svg { overflow: visible; display: block; width: 100%; height: auto; }
 
 /* Piano */
 .piano-scroll {
-    overflow-x: auto; -webkit-overflow-scrolling: touch;
     max-width: 100%; margin-top: 20px; border-radius: 5px;
+    overflow: hidden;
 }
 .piano {
     display: none; justify-content: flex-start; position: relative;
-    height: 140px; padding: 10px;
+    padding: 10px;
     background: #333; border-radius: 5px;
 }
 .piano.visible { display: flex; }
 
 .key {
-    width: 40px; height: 120px; background: white;
+    background: white;
     border: 1px solid #ccc; border-radius: 0 0 5px 5px;
     cursor: pointer; position: relative; z-index: 1;
     display: flex; align-items: flex-end; justify-content: center;
-    padding-bottom: 6px; font-weight: bold; font-size: 0.62rem; color: #aaa;
+    padding-bottom: 4px; font-weight: bold; color: #aaa;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     flex-shrink: 0; touch-action: manipulation; transition: background 0.1s;
 }
 .key.black {
-    width: 26px; height: 80px; background: #222; color: transparent;
+    background: #222; color: transparent;
     position: absolute; z-index: 2; border-radius: 0 0 3px 3px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.4);
 }

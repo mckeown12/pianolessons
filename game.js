@@ -102,21 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
         keySigLabelEl.style.display = 'inline-block';
     }
 
-    generatePiano();
-    nextNote();
+    // Defer generatePiano until after layout so clientWidth is reliable
+    requestAnimationFrame(() => {
+        generatePiano();
+        nextNote();
+    });
     if (!cfg.pianoOnly) document.addEventListener('keydown', handleKeyInput);
     initMIDI();
 
-    // Rescale piano after layout is calculated (needed for pianoOnly mode)
-    requestAnimationFrame(() => {
-        const totalWidth = parseInt(pianoEl.style.width, 10);
-        if (totalWidth) scalePiano(totalWidth);
-    });
-
-    // Rescale on orientation/resize
+    // Rebuild piano on resize/orientation change
     window.addEventListener('resize', () => {
-        const totalWidth = parseInt(pianoEl.style.width, 10);
-        if (totalWidth) scalePiano(totalWidth);
+        if (pianoEl.classList.contains('visible')) generatePiano();
     });
 });
 
@@ -126,15 +122,11 @@ function setLevel(l) {
     if (l === 1) {
         btnL1.classList.add('active'); btnL2.classList.remove('active');
         pianoEl.classList.remove('visible');
-        pianoEl.parentElement.style.height = '';
-        pianoEl.parentElement.style.overflow = '';
         instructionsEl.textContent = "Press the correct letter key (A\u2013G) or use MIDI.";
     } else {
         btnL1.classList.remove('active'); btnL2.classList.add('active');
         pianoEl.classList.add('visible');
-        // Rescale after the piano becomes visible so clientWidth is accurate
-        const totalWidth = parseInt(pianoEl.style.width, 10);
-        if (totalWidth) scalePiano(totalWidth);
+        generatePiano(); // rebuild with current container width
         instructionsEl.textContent = "Tap the correct key \u2014 octave matters!";
     }
     score = 0; scoreEl.textContent = 0; nextNote();
@@ -342,7 +334,7 @@ function handleWrong(msg) {
 
 function highlightCorrectKey(targetMidi) {
     const k = document.querySelector(`.key[data-midi="${targetMidi}"]`);
-    if (k) { k.classList.add('highlight'); k.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+    if (k) k.classList.add('highlight');
 }
 function clearHighlights() { document.querySelectorAll('.key.highlight').forEach(k => k.classList.remove('highlight')); }
 
@@ -356,11 +348,28 @@ function handleKeyInput(e) {
 // ─── Piano ────────────────────────────────────────────────────────────────────
 function generatePiano() {
     const min = cfg.pianoMin, max = cfg.pianoMax;
-    // Build chromatic layout from min to max
     const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-    pianoEl.innerHTML = '';
-    let whiteCount = 0;
 
+    // Count white keys to compute proportional sizing
+    let whiteCount = 0;
+    for (let midi = min; midi <= max; midi++) {
+        if (!noteNames[midi % 12].includes('#')) whiteCount++;
+    }
+
+    // Compute key width to fill available space (no scroll needed)
+    const scrollEl = pianoEl.parentElement;
+    const available = (scrollEl.clientWidth || scrollEl.offsetWidth || 600);
+    const padding = 10; // piano padding on each side
+    const ww = Math.floor((available - padding * 2) / whiteCount); // white key width
+    const bw = Math.round(ww * 0.6);   // black key width
+    const wh = Math.round(ww * 3.0);   // white key height
+    const bh = Math.round(wh * 0.62);  // black key height
+
+    pianoEl.innerHTML = '';
+    pianoEl.style.transform = '';
+    pianoEl.style.height = `${wh + padding * 2}px`;
+
+    let wi = 0; // white key index
     for (let midi = min; midi <= max; midi++) {
         const name = noteNames[midi % 12];
         const isBlack = name.includes('#');
@@ -370,11 +379,15 @@ function generatePiano() {
         el.dataset.midi = midi;
 
         if (!isBlack) {
-            // Label: show note name; show octave number on C keys
-            el.textContent = name === 'C' ? `C${octave}` : name;
-            whiteCount++;
+            el.style.width  = `${ww}px`;
+            el.style.height = `${wh}px`;
+            el.textContent  = name === 'C' ? `C${octave}` : name;
+            el.style.fontSize = `${Math.max(8, Math.round(ww * 0.28))}px`;
+            wi++;
         } else {
-            el.style.left = `${whiteCount * 40 - 13}px`;
+            el.style.width  = `${bw}px`;
+            el.style.height = `${bh}px`;
+            el.style.left   = `${padding + wi * ww - Math.round(bw / 2)}px`;
             if (cfg.pianoOnly) el.classList.add('clickable');
         }
 
@@ -386,27 +399,10 @@ function generatePiano() {
         }
         pianoEl.appendChild(el);
     }
-    const totalWidth = whiteCount * 40 + 20;
+    const totalWidth = wi * ww + padding * 2;
     pianoEl.style.width = `${totalWidth}px`;
-    scalePiano(totalWidth);
-}
-
-function scalePiano(totalWidth) {
-    const scrollEl = pianoEl.parentElement; // .piano-scroll
-    const available = scrollEl.clientWidth || scrollEl.offsetWidth;
-    if (available > 0 && totalWidth > available) {
-        const scale = available / totalWidth;
-        pianoEl.style.transformOrigin = 'top left';
-        pianoEl.style.transform = `scale(${scale})`;
-        // Adjust the scroll container height to match scaled piano
-        const scaledHeight = Math.round(140 * scale);
-        scrollEl.style.height = `${scaledHeight}px`;
-        scrollEl.style.overflow = 'hidden';
-    } else {
-        pianoEl.style.transform = '';
-        pianoEl.parentElement.style.height = '';
-        pianoEl.parentElement.style.overflow = '';
-    }
+    // No scroll needed — piano fills exactly the available width
+    scrollEl.style.overflowX = 'hidden';
 }
 
 function handlePianoPress(keyEl, midi) {

@@ -33,7 +33,7 @@
             <line x1="50" y1="100" x2="350" y2="100" class="staff-line"/>
             <line x1="50" y1="120" x2="350" y2="120" class="staff-line"/>
             <!-- Bass clef -->
-            <text x="5" y="180" font-size="40" class="clef-symbol">&#119074;</text>
+            <text x="5" y="260" font-size="40" class="clef-symbol">&#119074;</text>
             <!-- Bass staff -->
             <line x1="50" y1="180" x2="350" y2="180" class="staff-line"/>
             <line x1="50" y1="200" x2="350" y2="200" class="staff-line"/>
@@ -64,8 +64,8 @@ window.LESSON_CONFIG = {
     clefType: 'grand',
     pianoOnly: true,
     useKeySignatures: true,
-    pianoMin: 40,  // E2
-    pianoMax: 84,  // C6
+    pianoMin: 43,  // G2 (lowest note in lesson)
+    pianoMax: 77,  // F5 (highest note in lesson)
     notesData: [
         // ── Treble (C4–F5) ──
         { name:'C', octave:4, freq: 261.63, y:140, stemDown:false, ledgerLow:1, ledgerHigh:0, midi:60, clef:'treble' },
